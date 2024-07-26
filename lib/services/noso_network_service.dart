@@ -4,9 +4,9 @@ import 'dart:math';
 
 import 'package:noso_dart/models/noso/seed.dart';
 import 'package:noso_dart/node_request.dart';
-import 'package:sovarpc/w_old/response_node.dart';
+import 'package:sovarpc/models/response_node.dart';
 
-import 'network_object.dart';
+import '../utils/network_object.dart';
 
 class NosoNetworkService {
   List<Seed> seedsDefault = [];
@@ -40,20 +40,14 @@ class NosoNetworkService {
             : ResponseNode(errors: "Empty response");
       }
     } on TimeoutException catch (_) {
-    //  if (kDebugMode) {
         print("Connection timed out. Check server availability.");
-    //  }
       return ResponseNode(
           errors: "Connection timed out. Check server availability.");
     } on SocketException catch (e) {
-  //    if (kDebugMode) {
         print("SocketException: ${e.message}");
- //     }
       return ResponseNode(errors: "SocketException: ${e.message}");
     } catch (e) {
-  //    if (kDebugMode) {
         print("ServerService Exception: $e");
-  //    }
       return ResponseNode(errors: "ServerService Exception: $e");
     }
   }
@@ -83,20 +77,14 @@ class NosoNetworkService {
         return ResponseNode(errors: "Empty response");
       }
     } on TimeoutException catch (_) {
-  //    if (kDebugMode) {
         print("Connection timed out. Check server availability.");
-  //    }
       return ResponseNode(
           errors: "Connection timed out. Check server availability.");
     } on SocketException catch (e) {
-     // if (kDebugMode) {
         print("SocketException: ${e.message}");
-   //   }
       return ResponseNode(errors: "SocketException: ${e.message}");
     } catch (e) {
-  //    if (kDebugMode) {
         print("ServerService Exception: $e");
- //     }
       return ResponseNode(errors: "ServerService Exception: $e");
     }
   }

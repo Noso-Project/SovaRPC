@@ -57,7 +57,7 @@ class CliRpcHandler {
           Pen().red('Please note! The billing address is not specified.'));
     }
 
-    if (settings[4].split(',').isEmpty) {
+    if (settings[4].split(',').isEmpty || settings[4].isEmpty) {
       stdout.writeln(Pen().greenText(
           'Your WhiteList is empty your rpc is available for any addresses'));
     } else {

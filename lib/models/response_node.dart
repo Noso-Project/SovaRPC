@@ -1,6 +1,6 @@
 
 import 'package:noso_dart/models/noso/seed.dart';
-import 'package:sovarpc/w_old/response.dart';
+import 'package:sovarpc/models/response.dart';
 
 class ResponseNode<T> extends Response<T> {
   Seed seed;

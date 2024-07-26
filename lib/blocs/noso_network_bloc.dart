@@ -18,9 +18,9 @@ import '../models/app_configs_rpc.dart';
 import '../models/debug_rpc.dart';
 import '../repository/repositories_rpc.dart';
 import '../services/settings_yaml.dart';
-import '../w_old/enum.dart';
-import '../w_old/network_object.dart';
-import '../w_old/response_node.dart';
+import '../utils/enum.dart';
+import '../utils/network_object.dart';
+import '../models/response_node.dart';
 import 'debug_rpc_bloc.dart';
 
 class NosoNetworksState {

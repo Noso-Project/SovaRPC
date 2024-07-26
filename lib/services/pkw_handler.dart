@@ -4,7 +4,7 @@ import 'dart:typed_data';
 
 import 'package:noso_dart/handlers/files_handler.dart';
 
-import '../w_old/address_wallet.dart';
+import '../models/address_wallet.dart';
 
 class PkwHandler {
   static void isolateImport(SendPort mainSendPort) async {

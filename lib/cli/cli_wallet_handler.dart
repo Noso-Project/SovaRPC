@@ -7,9 +7,9 @@ import 'package:sovarpc/cli/loading.dart';
 import 'package:sovarpc/cli/pen.dart';
 import 'package:sovarpc/services/pkw_handler.dart';
 
+import '../database/database.dart';
 import '../services/settings_yaml.dart';
 import '../utils/path_app_rpc.dart';
-import '../w_old/database/database.dart';
 
 class CliWalletHandler {
   help(String usage) {
@@ -28,7 +28,7 @@ class CliWalletHandler {
             isIngoreVerification: true) ??
         [];
 
-    var database = MyDatabase(PathAppRpcUtil.getAppPath());
+    var database = LocalDatabase(PathAppRpcUtil.getAppPath());
 
     await database.addAddresses(listAddress);
     database.close();
@@ -49,7 +49,7 @@ class CliWalletHandler {
         "walletBackup_${DateTime.now().millisecondsSinceEpoch ~/ 1000}.pkw";
     stdout.writeln('Export addresses from: $fileName');
 
-    var database = MyDatabase(PathAppRpcUtil.getAppPath());
+    var database = LocalDatabase(PathAppRpcUtil.getAppPath());
     var listAddresses = await database.fetchTotalAddresses();
     database.close();
 
@@ -86,7 +86,7 @@ class CliWalletHandler {
       return;
     }
 
-    var database = MyDatabase(PathAppRpcUtil.getAppPath());
+    var database = LocalDatabase(PathAppRpcUtil.getAppPath());
     var isLocalAddress = await database.isLocalAddress(paymentHash);
 
     if (isLocalAddress) {
@@ -103,7 +103,7 @@ class CliWalletHandler {
   }
 
   Future<void> getWalletInfo() async {
-    var database = MyDatabase(PathAppRpcUtil.getAppPath());
+    var database = LocalDatabase(PathAppRpcUtil.getAppPath());
     var listAddress = await database.fetchTotalAddresses();
 
     var defaultAddress = await SettingsYamlHandler(PathAppRpcUtil.getAppPath())
@@ -118,7 +118,7 @@ class CliWalletHandler {
   }
 
   Future<void> getListAddress() async {
-    var database = MyDatabase(PathAppRpcUtil.getAppPath());
+    var database = LocalDatabase(PathAppRpcUtil.getAppPath());
     var listAddress = await database.fetchTotalAddressHashes();
 
     stdout.writeln(Pen().greenBg('All local Noso addresses:'));
@@ -129,7 +129,7 @@ class CliWalletHandler {
   }
 
   Future<void> getListAddressFull() async {
-    var database = MyDatabase(PathAppRpcUtil.getAppPath());
+    var database = LocalDatabase(PathAppRpcUtil.getAppPath());
     var listAddress = await database.fetchTotalAddresses();
 
     stdout.writeln(Pen().greenBg('All local Noso addresses:'));
@@ -148,7 +148,7 @@ class CliWalletHandler {
   Future<void> getNewAddress(bool isSave) async {
     AddressObject address = AddressHandler.createNewAddress();
     if (!isSave) {
-      var database = MyDatabase(PathAppRpcUtil.getAppPath());
+      var database = LocalDatabase(PathAppRpcUtil.getAppPath());
       await database.addAddress(address);
       database.close();
     }
@@ -166,7 +166,7 @@ class CliWalletHandler {
   }
 
   Future<void> isLocalAddress(String hash) async {
-    var database = MyDatabase(PathAppRpcUtil.getAppPath());
+    var database = LocalDatabase(PathAppRpcUtil.getAppPath());
     var isLocal = await database.isLocalAddress(hash);
 
     if (isLocal) {

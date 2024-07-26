@@ -1,6 +1,6 @@
 import 'package:drift/drift.dart';
 
-import '../contact.dart';
+import '../../models/contact.dart';
 
 @UseRowClass(ContactModel)
 class Contact extends Table {
