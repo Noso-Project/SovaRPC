@@ -1,3 +1,7 @@
+## v.1.1.4
+
+- Fixing bugs and updating verification nodes
+
 ## v.1.1.1
 
 - Splitting code into packages

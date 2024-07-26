@@ -1,0 +1,252 @@
+name: Dart
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+    paths-ignore:
+     - "doc/**"
+     - "tool/**"
+     - ".vscode/**"
+     - 'README.md'
+     - '.gitignore'
+     - 'analysis_options.yaml'
+     - 'devtools_options.yaml'
+     - 'LICENSE'
+
+jobs:
+  build-ubuntu:
+    if: github.actor == 'pasichDev'
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dart-lang/setup-dart@v1
+
+      - name: Install dependencies
+        run: dart pub get
+        
+      - name: Compile RPC
+        run: dart compile exe bin/rpc.dart -o rpc
+        
+      - name: Compile Wallet
+        run: dart compile exe bin/wallet.dart -o wallet
+        
+      - name: Prepare artifact
+        run: |
+          mkdir -p sova-cli/
+          mv rpc wallet CHANGELOG.md LICENSE sova-cli/
+          cd sova-cli
+          tar -czvf SovaCLI-ubuntu-latest-x86_64.tar.gz *
+          cd ..
+          ls -l sova-cli
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: sova-cli-ubuntu
+          path: sova-cli/SovaCLI-ubuntu-latest-x86_64.tar.gz
+
+  build-windows:
+    if: github.actor == 'pasichDev'
+    runs-on: windows-latest
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dart-lang/setup-dart@v1
+
+      - name: Install dependencies
+        run: dart pub get
+        
+      - name: Compile RPC
+        run: dart compile exe bin/rpc.dart -o rpc.exe
+        
+      - name: Compile Wallet
+        run: dart compile exe bin/wallet.dart -o wallet.exe
+
+      - name: Prepare artifact
+        run: |
+          mkdir -p sova-cli/
+          Move-Item -Path rpc.exe -Destination sova-cli/
+          Move-Item -Path wallet.exe -Destination sova-cli/
+          Move-Item -Path LICENSE -Destination sova-cli/
+          Move-Item -Path CHANGELOG.md -Destination sova-cli/
+          Compress-Archive -Path sova-cli\* -DestinationPath sova-cli\SovaCLI-windows-latest-x86_64.zip
+          
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: sova-cli-windows
+          path: sova-cli\SovaCLI-windows-latest-x86_64.zip
+
+  build-macos-x64:
+    if: github.actor == 'pasichDev'
+    runs-on: macos-latest
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dart-lang/setup-dart@v1
+        with: 
+          architecture: x64
+
+      - name: Install dependencies
+        run: dart pub get
+        
+      - name: Compile RPC
+        run: dart compile exe bin/rpc.dart -o rpc
+        
+      - name: Compile Wallet
+        run: dart compile exe bin/wallet.dart -o wallet
+
+      - name: Prepare artifact
+        run: |
+          mkdir -p sova-cli/
+          mv rpc wallet CHANGELOG.md LICENSE sova-cli/
+          cd sova-cli
+          tar -czvf SovaCLI-macos-x64-latest.tar.gz *
+          cd ..
+          ls -l sova-cli
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: sova-cli-macos-x64
+          path: sova-cli/SovaCLI-macos-x64-latest.tar.gz
+
+  build-macos-arm64:
+    if: github.actor == 'pasichDev'
+    runs-on: macos-latest
+    
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dart-lang/setup-dart@v1
+        with: 
+          architecture: arm64
+
+      - name: Install dependencies
+        run: dart pub get
+
+      - name: Compile RPC
+        run: dart compile exe bin/rpc.dart -o rpc
+        
+      - name: Compile Wallet
+        run: dart compile exe bin/wallet.dart -o wallet
+
+      - name: Prepare artifact
+        run: |
+          mkdir -p sova-cli/
+          mv rpc wallet CHANGELOG.md LICENSE sova-cli/
+          cd sova-cli
+          tar -czvf SovaCLI-macos-arm64-latest.tar.gz *
+          cd ..
+          ls -l sova-cli
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: sova-cli-macos-arm64
+          path: sova-cli/SovaCLI-macos-arm64-latest.tar.gz
+
+  release:
+    if: github.actor == 'pasichDev'
+    needs: [build-ubuntu, build-windows, build-macos-x64, build-macos-arm64]
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Download ubuntu artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: sova-cli-ubuntu
+          path: sova-cli
+
+      - name: Download windows artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: sova-cli-windows
+          path: sova-cli
+
+      - name: Download macOS x64 artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: sova-cli-macos-x64
+          path: sova-cli
+
+      - name: Download macOS arm64 artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: sova-cli-macos-arm64
+          path: sova-cli
+
+      - name: Get version from pubspec.yaml
+        id: get_version
+        run: |
+          VERSION=$(grep ^version pubspec.yaml | sed 's/version: //')
+          echo "::set-output name=VERSION::$VERSION"
+          echo "::set-output name=TAG::v$VERSION"
+          echo "::set-output name=RELEASE_NAME::Sova CLI $VERSION"
+
+      - name: Check if release exists
+        id: check_release
+        run: |
+          if gh release view ${{ steps.get_version.outputs.TAG }}; then
+            echo "Release already exists"
+            exit 1
+          fi
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        with:
+          tag_name: ${{ steps.get_version.outputs.TAG }}
+          release_name: ${{ steps.get_version.outputs.RELEASE_NAME }}
+          body_path: CHANGELOG.md
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload ubuntu asset
+        uses: actions/upload-release-asset@v1
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: sova-cli/SovaCLI-ubuntu-latest-x86_64.tar.gz
+          asset_name: SovaCLI-ubuntu-latest-x86_64.tar.gz
+          asset_content_type: application/gzip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload windows asset
+        uses: actions/upload-release-asset@v1
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: sova-cli/SovaCLI-windows-latest-x86_64.zip
+          asset_name: SovaCLI-windows-latest-x86_64.zip
+          asset_content_type: application/zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload macOS x64 asset
+        uses: actions/upload-release-asset@v1
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: sova-cli/SovaCLI-macos-x64-latest.tar.gz
+          asset_name: SovaCLI-macos-x64-latest.tar.gz
+          asset_content_type: application/gzip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload macOS arm64 asset
+        uses: actions/upload-release-asset@v1
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: sova-cli/SovaCLI-macos-arm64-latest.tar.gz
+          asset_name: SovaCLI-macos-arm64-latest.tar.gz
+          asset_content_type: application/gzip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
