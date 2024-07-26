@@ -11,7 +11,6 @@ import 'package:sovarpc/cli/pen.dart';
 
 final _logger = Logger("");
 
-///TODo  Методи не є спільними для ігнорування
 
 Future<void> main(List<String> arguments) async {
   PrintAppender.setupLogging();

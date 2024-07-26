@@ -74,6 +74,7 @@ class RpcBloc extends Bloc<RPCEvents, RpcState> {
     try {
       var address = event.address;
       var ignoreMethods = event.ignoreMethods;
+      var whiteList = event.whiteList;
       var addressArray = address.split(":");
       var config = locatorRpc<SettingsYamlHandler>();
       await config.writeSet(SettingsKeys.ip, addressArray[0]);
@@ -95,7 +96,8 @@ class RpcBloc extends Bloc<RPCEvents, RpcState> {
             'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
             'Access-Control-Allow-Headers': 'Content-Type',
           }, originChecker: checker))
-          .addHandler(ServiceRPC(_repositories, ignoreMethods).handler);
+          .addHandler(
+              ServiceRPC(_repositories, ignoreMethods, whiteList).handler);
 
       rpcServer = await shelf_io.serve(
           pipeline, addressArray[0], int.parse(addressArray[1]));

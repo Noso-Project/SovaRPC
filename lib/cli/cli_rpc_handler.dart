@@ -38,8 +38,9 @@ class CliRpcHandler {
     stdout.writeln(Pen().greenBg('${PathAppRpcUtil.rpcConfigFilePath}:'));
     stdout.writeln('IP:PORT: ${settings[0]}\n'
         'LOG_LEVEL: ${settings[1]}\n'
-        'PAYMENT ADDRESS:  ${settings[2].isEmpty ? "ERROR" : settings[2]}\n'
-        'IGNORE METHODS RPC:  ${settings[3].isEmpty ? "NONE" : settings[3]}');
+        'PAYMENT ADDRESS:  ${settings[2].isEmpty ?  Pen().red("ERROR") : settings[2]}\n'
+        'IGNORE METHODS RPC:  ${settings[3].isEmpty ? "NONE" : settings[3]}\n'
+        'WHITE LIST IPs:  ${settings[4].isEmpty ? "NONE" : settings[4]}\n');
   }
 
   Future<void> runRpcMode(Logger logger) async {
@@ -56,10 +57,18 @@ class CliRpcHandler {
           Pen().red('Please note! The billing address is not specified.'));
     }
 
+    if (settings[4].split(',').isEmpty) {
+      stdout.writeln(Pen().greenText(
+          'Your WhiteList is empty your rpc is available for any addresses'));
+    } else {
+      stdout.writeln(Pen().red('WhiteList activated ->\n${settings[4]}'));
+    }
+
     await setupDiRPC(PathAppRpcUtil.getAppPath(),
         logger: logger, logLevel: LogLevel(level: settings[1]));
     locatorRpc<NosoNetworkBloc>().add(InitialConnect());
     await Future.delayed(const Duration(seconds: 5));
-    locatorRpc<RpcBloc>().add(StartServer(settings[0], settings[3]));
+    locatorRpc<RpcBloc>()
+        .add(StartServer(settings[0], settings[3], settings[4]));
   }
 }

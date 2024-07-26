@@ -1,6 +1,7 @@
 ## v.1.2.4
 
-- example
+- Add support white list IPs
+- Add support for CORS (CORS_ALLOW_ALL_ORIGINS = True)
 
 ## v.1.1.4
 

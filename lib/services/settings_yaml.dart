@@ -13,6 +13,7 @@ class SettingsKeys {
   static String logsLevel = "logsLevel";
   static String lastSeed = "lastSeed";
   static String rpcAddress = "rpcAddress";
+  static String whiteList = "whitelist";
   static String defaultPaymentAddress = "defaultPaymentAddress";
 }
 
@@ -35,6 +36,7 @@ class SettingsYamlHandler {
         settings[SettingsKeys.logsLevel] = "release";
         settings[SettingsKeys.defaultPaymentAddress] = "";
         settings[SettingsKeys.lastSeed] = "";
+        settings[SettingsKeys.whiteList] = "";
         settings.save();
         stdout.writeln(
             Pen().greenText('${PathAppRpcUtil.rpcConfigFilePath} created.'));
@@ -49,6 +51,7 @@ class SettingsYamlHandler {
       settings[SettingsKeys.logsLevel],
       settings[SettingsKeys.defaultPaymentAddress],
       settings[SettingsKeys.ignoreMethods],
+      settings[SettingsKeys.whiteList],
     ];
   }
 
