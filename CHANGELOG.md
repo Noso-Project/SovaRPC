@@ -1,3 +1,7 @@
+## v.1.2.4
+
+- example
+
 ## v.1.1.4
 
 - Fixing bugs and updating verification nodes
