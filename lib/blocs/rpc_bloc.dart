@@ -1,7 +1,9 @@
 import 'dart:io';
 
 import 'package:bloc/bloc.dart';
+import 'package:shelf/shelf.dart';
 import 'package:shelf/shelf_io.dart' as shelf_io;
+import 'package:shelf_cors_headers/shelf_cors_headers.dart';
 import 'package:sovarpc/blocs/rpc_events.dart';
 import 'package:sovarpc/services/settings_yaml.dart';
 
@@ -66,6 +68,8 @@ class RpcBloc extends Bloc<RPCEvents, RpcState> {
         rpcAddress: address, ignoreMethods: iMethods, rpcRunnable: false));
   }
 
+  /// Added support for CORS (CORS_ALLOW_ALL_ORIGINS = True)
+  /// v1.2.4
   void _startServer(event, emit) async {
     try {
       var address = event.address;
@@ -80,10 +84,21 @@ class RpcBloc extends Bloc<RPCEvents, RpcState> {
         await rpcServer!.close(force: true);
         rpcServer = null;
       }
+
+      bool checker(String x) {
+        return true;
+      }
+
+      final pipeline = const Pipeline()
+          .addMiddleware(corsHeaders(headers: {
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+            'Access-Control-Allow-Headers': 'Content-Type',
+          }, originChecker: checker))
+          .addHandler(ServiceRPC(_repositories, ignoreMethods).handler);
+
       rpcServer = await shelf_io.serve(
-          ServiceRPC(_repositories, ignoreMethods).handler,
-          addressArray[0],
-          int.parse(addressArray[1]));
+          pipeline, addressArray[0], int.parse(addressArray[1]));
 
       _debugBloc.add(AddStringDebug(
           "Start RPC at http://${rpcServer?.address.host}:${rpcServer?.port}",
