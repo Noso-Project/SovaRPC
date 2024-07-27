@@ -77,8 +77,7 @@ class CliWalletHandler {
   }
 
   Future<void> setPaymentAddress(String paymentHash) async {
-    var settings =
-        await SettingsYamlHandler(PathAppRpcUtil.getAppPath()).checkConfig();
+    var settings = await SettingsYamlHandler().checkConfig();
 
     if (settings.isEmpty) {
       stdout.writeln('${PathAppRpcUtil.rpcConfigFilePath} not found...');
@@ -90,7 +89,7 @@ class CliWalletHandler {
     var isLocalAddress = await database.isLocalAddress(paymentHash);
 
     if (isLocalAddress) {
-      await SettingsYamlHandler(PathAppRpcUtil.getAppPath())
+      await SettingsYamlHandler()
           .writeSet(SettingsKeys.defaultPaymentAddress, paymentHash);
       stdout.writeln(
           Pen().greenText('Billing address has been updated: $paymentHash'));
@@ -106,8 +105,8 @@ class CliWalletHandler {
     var database = LocalDatabase(PathAppRpcUtil.getAppPath());
     var listAddress = await database.fetchTotalAddresses();
 
-    var defaultAddress = await SettingsYamlHandler(PathAppRpcUtil.getAppPath())
-        .getSet(SettingsKeys.defaultPaymentAddress);
+    var defaultAddress =
+        await SettingsYamlHandler().getSet(SettingsKeys.defaultPaymentAddress);
 
     stdout.writeln(Pen().greenText('Wallet info:\n'
         'Count addresses: ${listAddress.length} \n'

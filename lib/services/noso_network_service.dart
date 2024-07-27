@@ -6,15 +6,9 @@ import 'package:noso_dart/models/noso/seed.dart';
 import 'package:noso_dart/node_request.dart';
 import 'package:sovarpc/models/response_node.dart';
 
-import '../utils/network_object.dart';
+import '../utils/verification_service.dart';
 
 class NosoNetworkService {
-  List<Seed> seedsDefault = [];
-
-  NosoNetworkService() {
-    seedsDefault = NetworkObject.getVerificationSeedList();
-  }
-
   Future<ResponseNode<List<int>>> fetchNode(String command, Seed seed) async {
     final responseBytes = <int>[];
     try {
@@ -40,19 +34,21 @@ class NosoNetworkService {
             : ResponseNode(errors: "Empty response");
       }
     } on TimeoutException catch (_) {
-        print("Connection timed out. Check server availability.");
+      print("Connection timed out. Check server availability.");
       return ResponseNode(
           errors: "Connection timed out. Check server availability.");
     } on SocketException catch (e) {
-        print("SocketException: ${e.message}");
+      print("SocketException: ${e.message}");
       return ResponseNode(errors: "SocketException: ${e.message}");
     } catch (e) {
-        print("ServerService Exception: $e");
+      print("ServerService Exception: $e");
       return ResponseNode(errors: "ServerService Exception: $e");
     }
   }
 
   Future<ResponseNode<List<int>>> getRandomDevNode() async {
+    List<Seed> seedsDefault = await VerificationService.getVerificationSeedList();
+
     final responseBytes = <int>[];
     Random random = Random();
     int randomIndex = random.nextInt(seedsDefault.length);
@@ -77,20 +73,20 @@ class NosoNetworkService {
         return ResponseNode(errors: "Empty response");
       }
     } on TimeoutException catch (_) {
-        print("Connection timed out. Check server availability.");
+      print("Connection timed out. Check server availability.");
       return ResponseNode(
           errors: "Connection timed out. Check server availability.");
     } on SocketException catch (e) {
-        print("SocketException: ${e.message}");
+      print("SocketException: ${e.message}");
       return ResponseNode(errors: "SocketException: ${e.message}");
     } catch (e) {
-        print("ServerService Exception: $e");
+      print("ServerService Exception: $e");
       return ResponseNode(errors: "ServerService Exception: $e");
     }
   }
 
   Future<Socket> _connectSocket(Seed seed) async {
     return Socket.connect(seed.ip, seed.port,
-        timeout: const Duration(seconds: NetworkObject.durationTimeOut));
+        timeout: const Duration(seconds: VerificationService.durationTimeOut));
   }
 }

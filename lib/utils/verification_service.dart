@@ -1,8 +1,12 @@
+import 'dart:io';
 import 'dart:math';
 
 import 'package:noso_dart/models/noso/seed.dart';
 
-final class NetworkObject {
+import '../cli/pen.dart';
+import '../services/settings_yaml.dart';
+
+final class VerificationService {
   static const List<String> seedsVerification = [
     "20.199.50.27",
     "84.247.143.153",
@@ -16,7 +20,7 @@ final class NetworkObject {
   static const int durationTimeOut = 3;
   static const int delaySync = 30;
 
-  static String getRandomNode(String? inputString) {
+  static Future<String> getRandomNode(String? inputString) async {
     List<String> elements = (inputString ?? "").split(',');
     int elementCount = elements.length;
     if (elementCount > 0 && inputString != null && inputString.isNotEmpty) {
@@ -24,15 +28,24 @@ final class NetworkObject {
       var targetSeed = elements[randomIndex].split("|")[0];
       return targetSeed;
     } else {
-      var devNode = NetworkObject.getVerificationSeedList();
+      var devNode = await VerificationService.getVerificationSeedList();
       int randomDev = Random().nextInt(devNode.length);
       return devNode[randomDev].toTokenizer;
     }
   }
 
-  static List<Seed> getVerificationSeedList() {
+  static Future<List<Seed>> getVerificationSeedList() async {
+    var settingsSeeds =
+        await SettingsYamlHandler().getSet(SettingsKeys.verificationSeeds);
+    List<String> mVerSeeds = List.from(seedsVerification);
+    var newSeedList = settingsSeeds.split(",");
+    if (settingsSeeds.isNotEmpty && newSeedList.length >= 4) {
+      mVerSeeds.clear();
+      mVerSeeds.addAll(newSeedList);
+    }
+
     List<Seed> defSeed = [];
-    for (String seed in seedsVerification) {
+    for (String seed in mVerSeeds) {
       defSeed.add(Seed(ip: seed));
     }
     return defSeed;

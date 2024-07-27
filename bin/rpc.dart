@@ -8,9 +8,9 @@ import 'package:sovarpc/cli/cli_rpc_handler.dart';
 import 'package:sovarpc/cli/comands.dart';
 import 'package:sovarpc/cli/exit.dart';
 import 'package:sovarpc/cli/pen.dart';
+import 'package:sovarpc/utils/version.dart';
 
 final _logger = Logger("");
-
 
 Future<void> main(List<String> arguments) async {
   PrintAppender.setupLogging();
@@ -42,7 +42,9 @@ Future<void> main(List<String> arguments) async {
 
     if (args[CliCommands.run] as bool || arguments.isEmpty) {
       CliExit.exitListener(AppType.rpc);
-      stdout.writeln(Pen().greenBg('RPC mode started'));
+
+      stdout
+          .writeln(Pen().greenText('>>> SovaRPC v${VersionUtil.getVersion()}'));
       await rpcHandler.runRpcMode(_logger);
       return;
     }
@@ -55,5 +57,5 @@ Future<void> main(List<String> arguments) async {
   } catch (_) {}
 
   stdout.writeln(Pen().red(
-      'Error: Command or parameter not found. Please use --help to see available options.'));
+      '> Error: Command or parameter not found. Please use --help to see available options.'));
 }

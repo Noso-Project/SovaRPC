@@ -82,6 +82,8 @@ After running these commands, you will get two executable files **rpc** && **wal
 
 **whitelist** - list of white ip requests from which RPC will be processed. if left blank, access will be open to all addresses
 
+**verification_seeds** - a list of verified nodes for manual installation. by default, verified nodes are encoded in the project code, if they are not available, you can manually build them by requesting them from Discrod/Github.
+Example of installation: ***verification_seeds: “locahost,localhost,localhost,localhost”*** - the number of seeds must be at least 4
 
 
 ## Example of configuration

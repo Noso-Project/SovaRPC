@@ -14,13 +14,12 @@ class SettingsKeys {
   static String lastSeed = "lastSeed";
   static String rpcAddress = "rpcAddress";
   static String whiteList = "whitelist";
+  static String verificationSeeds = "verification_seeds";
   static String defaultPaymentAddress = "defaultPaymentAddress";
 }
 
 class SettingsYamlHandler {
-  final String appPath;
-
-  SettingsYamlHandler(this.appPath);
+  SettingsYamlHandler();
 
   Future<List<String>> checkConfig() async {
     final File configFile = File(PathAppRpcUtil.rpcConfigFilePath);

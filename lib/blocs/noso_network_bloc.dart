@@ -16,11 +16,11 @@ import 'package:sovarpc/utils/calcutes.dart';
 
 import '../models/app_configs_rpc.dart';
 import '../models/debug_rpc.dart';
+import '../models/response_node.dart';
 import '../repository/repositories_rpc.dart';
 import '../services/settings_yaml.dart';
 import '../utils/enum.dart';
-import '../utils/network_object.dart';
-import '../models/response_node.dart';
+import '../utils/verification_service.dart';
 import 'debug_rpc_bloc.dart';
 
 class NosoNetworksState {
@@ -135,7 +135,7 @@ class NosoNetworkBloc extends Bloc<NetworkNosoEvents, NosoNetworksState> {
         }
         return await _repositories.networkRepository.fetchNode(
             NodeRequest.getNodeStatus,
-            Seed().tokenizer(NetworkObject.getRandomNode(null),
+            Seed().tokenizer(await VerificationService.getRandomNode(null),
                 rawString: appBlocConfig.lastSeed));
       case InitialNodeAlgorithm.listenUserNodes:
         if (logLevel.isDebug) {
@@ -144,7 +144,8 @@ class NosoNetworkBloc extends Bloc<NetworkNosoEvents, NosoNetworksState> {
         }
         return await _repositories.networkRepository.fetchNode(
             NodeRequest.getNodeStatus,
-            Seed().tokenizer(NetworkObject.getRandomNode(listUsersNodes)));
+            Seed().tokenizer(
+                await VerificationService.getRandomNode(listUsersNodes)));
       default:
         if (logLevel.isDebug) {
           _debugBloc
@@ -296,8 +297,8 @@ class NosoNetworkBloc extends Bloc<NetworkNosoEvents, NosoNetworksState> {
     int attemptsUser = 0;
 
     do {
-      var randomSeed =
-          Seed().tokenizer(NetworkObject.getRandomNode(listNodesUsers));
+      var randomSeed = Seed()
+          .tokenizer(await VerificationService.getRandomNode(listNodesUsers));
       var targetUserNode = await _repositories.networkRepository
           .fetchNode(NodeRequest.getNodeStatus, randomSeed);
       final Node? nodeUserOutput =
