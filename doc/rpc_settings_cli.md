@@ -80,7 +80,7 @@ After running these commands, you will get two executable files **rpc** && **wal
 
 **defaultPaymentAddress** - default address from which payments will be made via the rpc interface [sendfunds-transfer](doc/rpc_methods.md#sendfunds-transfer)
 
-**lastSeed** - is the last node with which the rpc communicates. if it hangs, you can change it to one of the verified sidecars and restart the rpc
+**lastSeed** - is the last node with which the rpc communicates. if it hangs, you can change it to one of the verified seeds and restart the rpc
 
 **whitelist** - list of white ip requests from which RPC will be processed. if left blank, access will be open to all addresses
 
