@@ -6,7 +6,7 @@ import 'package:archive/archive_io.dart';
 import 'package:noso_dart/handlers/files_handler.dart';
 import 'package:noso_dart/utils/noso_utility.dart';
 
-import '../w_old/address_wallet.dart';
+import '../models/address_wallet.dart';
 
 class FileServiceRpc {
   String nameFileSummary;

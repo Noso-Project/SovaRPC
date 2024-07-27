@@ -1,7 +1,7 @@
 import 'package:noso_dart/models/noso/seed.dart';
 
-import '../w_old/noso_network_service.dart';
-import '../w_old/response_node.dart';
+import '../services/noso_network_service.dart';
+import '../models/response_node.dart';
 
 class NosoNetworkRepository {
   final NosoNetworkService _nodeService;

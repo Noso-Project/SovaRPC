@@ -2,7 +2,7 @@ import 'dart:typed_data';
 
 
 import '../services/file_service_rpc.dart';
-import '../w_old/address_wallet.dart';
+import '../models/address_wallet.dart';
 
 
 class FileRepositoryRpc {

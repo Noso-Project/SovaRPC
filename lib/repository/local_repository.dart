@@ -1,12 +1,12 @@
 import 'package:noso_dart/models/noso/address_object.dart';
 
-import '../w_old/address_wallet.dart';
-import '../w_old/contact.dart';
-import '../w_old/database/database.dart';
+import '../database/database.dart';
+import '../models/address_wallet.dart';
+import '../models/contact.dart';
 
 
 class LocalRepository {
-  final MyDatabase _database;
+  final LocalDatabase _database;
 
   LocalRepository(this._database);
 
