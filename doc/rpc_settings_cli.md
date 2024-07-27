@@ -48,12 +48,14 @@ After running these commands, you will get two executable files **rpc** && **wal
 
 ### RPC
 
-| Command    | Short | Parameter | Description                                                                          |
-|------------|-------|-----------|--------------------------------------------------------------------------------------|
-| --help     | -h    |           | Show all RPC commands                                                                |
-| --methods  | -m    |           | Show all JSON-RPC methods                                                            |
-| --run      | -r    |           | Start RPC mode                                                                       |
+| Command    | Short | Parameter | Description                                                                           |
+|------------|-------|-----------|---------------------------------------------------------------------------------------|
+| --help     | -h    |           | Show all RPC commands                                                                 |
+| --methods  | -m    |           | Show all JSON-RPC methods                                                             |
+| --run      | -r    |           | Start RPC mode                                                                        |
 | --config   | -c    |           | Displays the contents of the configuration file, if it does not exist, it creates it. |
+| --version  | -v    |           | Get version SovaRPC                                                                   |
+| --testSeeds| -t    |           | Testing of verified seeds                                                             |
 
 ### Wallet
 

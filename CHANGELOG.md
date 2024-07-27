@@ -1,5 +1,6 @@
 ## v.1.2.4
 
+- Added commands, --version, --testSeeds
 - Added support for manual installation of verified seeds
 - Add support white list IPs
 - Add support for CORS (CORS_ALLOW_ALL_ORIGINS = True)

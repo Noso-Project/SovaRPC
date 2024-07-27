@@ -12,10 +12,37 @@ import '../di.dart';
 import '../models/log_level.dart';
 import '../services/settings_yaml.dart';
 import '../utils/path_app_rpc.dart';
+import '../utils/verification_service.dart';
+import '../utils/version.dart';
 
 class CliRpcHandler {
   help(String usage) {
     stdout.writeln('Available commands:\n$usage');
+  }
+
+  testSeeds() async {
+    stdout.writeln(Pen().greenText('> Start testing verified nodes'));
+
+    var settingsSeeds =
+        await SettingsYamlHandler().getSet(SettingsKeys.verificationSeeds);
+
+    if (settingsSeeds.isNotEmpty && settingsSeeds.split(",").length >= 4) {
+      var setSeeds = settingsSeeds.split(",");
+      stdout.writeln(Pen().greenText(
+          '> List of verified nodes is loaded from the config_rpc.yaml file'));
+      await VerificationService.seedsTester(setSeeds: setSeeds);
+    } else {
+      stdout.writeln(Pen().red(
+          '> The list of installed nodes in config_rpc.yaml is empty. skip testing...'));
+    }
+    stdout.writeln(Pen().greenText('\n'));
+    stdout.writeln(
+        Pen().greenText('> List of verified nodes encoded in binary code'));
+    await VerificationService.seedsTester();
+  }
+
+  version() {
+    stdout.writeln('> SovaRPC v${VersionUtil.getVersion()}');
   }
 
   methods() {

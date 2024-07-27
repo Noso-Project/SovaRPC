@@ -2,8 +2,10 @@ import 'dart:io';
 import 'dart:math';
 
 import 'package:noso_dart/models/noso/seed.dart';
+import 'package:noso_dart/node_request.dart';
 
 import '../cli/pen.dart';
+import '../services/noso_network_service.dart';
 import '../services/settings_yaml.dart';
 
 final class VerificationService {
@@ -49,5 +51,21 @@ final class VerificationService {
       defSeed.add(Seed(ip: seed));
     }
     return defSeed;
+  }
+
+  static seedsTester({List<String> setSeeds = VerificationService.seedsVerification}) async {
+    for (int i = 0; i < setSeeds.length; i++) {
+      try {
+        var connect = await NosoNetworkService()
+            .fetchNode(NodeRequest.getNodeStatus, Seed(ip: setSeeds[i]));
+        if (connect.errors == null) {
+          stdout.writeln(Pen().greenText('>>> ${setSeeds[i]} OKAY'));
+        } else {
+          stdout.writeln(Pen().red('>>> ${setSeeds[i]} FAIL'));
+        }
+      } catch (e) {
+        stdout.writeln(Pen().red('>>> Error processing ${setSeeds[i]}: $e'));
+      }
+    }
   }
 }

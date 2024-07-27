@@ -21,6 +21,10 @@ Future<void> main(List<String> arguments) async {
         abbr: 'm', negatable: false, help: 'Show all JSON-RPC methods')
     ..addFlag(CliCommands.run,
         abbr: 'r', negatable: false, help: 'Start RPC mode')
+    ..addFlag(CliCommands.version,
+        abbr: 'v', negatable: false, help: 'Get version SovaRPC')
+    ..addFlag(CliCommands.testSeeds,
+        abbr: 't', negatable: false, help: 'Testing of verified seeds')
     ..addFlag(CliCommands.config,
         abbr: 'c',
         negatable: false,
@@ -32,6 +36,16 @@ Future<void> main(List<String> arguments) async {
     final ArgResults args = argParser.parse(arguments);
     if (args[CliCommands.help] as bool) {
       rpcHandler.help(argParser.usage);
+      return;
+    }
+
+    if (args[CliCommands.testSeeds] as bool) {
+      rpcHandler.testSeeds();
+      return;
+    }
+
+    if (args[CliCommands.version] as bool) {
+      rpcHandler.version();
       return;
     }
 

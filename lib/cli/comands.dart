@@ -1,5 +1,7 @@
 class CliCommands {
   static const String help = "help";
+  static const String version = "version";
+  static const String testSeeds = "testSeeds";
 
   /// WALLET CLI
   static const String import = "import";
