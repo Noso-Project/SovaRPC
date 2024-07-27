@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:shelf/shelf.dart';
 import 'package:shelf_router/shelf_router.dart';
@@ -12,6 +13,7 @@ import '../../models/debug_rpc.dart';
 class ServiceRPC {
   final RepositoriesRpc repositories;
   final String ignoreMethods;
+  final String whiteList;
   late RPCHandlers rpcHandlers;
   final _responseBad = Response.ok(jsonEncode({
     'jsonrpc': '2.0',
@@ -19,7 +21,7 @@ class ServiceRPC {
     'id': -1,
   }));
 
-  ServiceRPC(this.repositories, this.ignoreMethods) {
+  ServiceRPC(this.repositories, this.ignoreMethods, this.whiteList) {
     rpcHandlers = RPCHandlers(repositories);
   }
 
@@ -56,9 +58,7 @@ class ServiceRPC {
     } catch (e) {
       locatorRpc<DebugRPCBloc>()
           .add(AddStringDebug(e.toString(), StatusReport.RPC, DebugType.error));
-    //  if (kDebugMode) {
-        print(e);
-      //}
+      print(e);
 
       return _responseBad;
     }
@@ -118,10 +118,29 @@ class ServiceRPC {
     return _responseBad;
   }
 
+
+  /// Add support whiteListIP
+  /// v1.2.4
   Handler get handler {
     final router = Router();
+    var mWhite = whiteList.split(',');
     router.post('/', (Request request) {
-      return handleJsonRpcRequest(request);
+      final clientAddress =
+          (request.context['shelf.io.connection_info'] as HttpConnectionInfo?)
+              ?.remoteAddress
+              .address;
+
+      if (mWhite.isEmpty || mWhite.contains(clientAddress.toString())) {
+        return handleJsonRpcRequest(request);
+      }
+
+      return Response.ok(jsonEncode({
+        'jsonrpc': '2.0',
+        'result': [
+          {"result": "Banned"}
+        ],
+        'id': -1,
+      }));
     });
 
     router.get('/health-check', (Request request) async {

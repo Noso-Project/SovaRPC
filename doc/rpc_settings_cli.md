@@ -1,6 +1,6 @@
 # SovaRPC-CLI Configuration Manual
 
-**SovaRPC** has a version for use as a cli on headless servers. To get the **sovarpc-cli**, you can compile it yourself or download it from the [releases page](https://github.com/Noso-Project/NosoSova/releases).
+**SovaRPC** has a version for use as a cli on headless servers. To get the **sovarpc-cli**, you can compile it yourself or download it from the [releases page](https://github.com/pasichDev/SovaRPC/releases).
 
 ## The main things you need to know
 
@@ -48,12 +48,14 @@ After running these commands, you will get two executable files **rpc** && **wal
 
 ### RPC
 
-| Command    | Short | Parameter | Description                                                                          |
-|------------|-------|-----------|--------------------------------------------------------------------------------------|
-| --help     | -h    |           | Show all RPC commands                                                                |
-| --methods  | -m    |           | Show all JSON-RPC methods                                                            |
-| --run      | -r    |           | Start RPC mode                                                                       |
+| Command    | Short | Parameter | Description                                                                           |
+|------------|-------|-----------|---------------------------------------------------------------------------------------|
+| --help     | -h    |           | Show all RPC commands                                                                 |
+| --methods  | -m    |           | Show all JSON-RPC methods                                                             |
+| --run      | -r    |           | Start RPC mode                                                                        |
 | --config   | -c    |           | Displays the contents of the configuration file, if it does not exist, it creates it. |
+| --version  | -v    |           | Get version SovaRPC                                                                   |
+| --testSeeds| -t    |           | Testing of verified seeds                                                             |
 
 ### Wallet
 
@@ -69,6 +71,22 @@ After running these commands, you will get two executable files **rpc** && **wal
 | --no-save|       |                   | Disables saving address for local database                                                                   |
 | --isLocal| -l   | <hash>             | Checks if the address is saved locally, use <hash> parameter                                                 |
 | --setPaymentAddress| -p | <hash>     | Sets the default payment address use <hash> parameter                                                        |
+
+## rpc_config.yaml
+
+**ignoreMethods** - enter here the methods that you want to restrict access to from the rpc interface ***(for example: "restart,getnewaddressfull")***
+
+**logsLevel** - this is an unchanging constant used by the application debugger, it can have two values ***release*** or ***debug***
+
+**defaultPaymentAddress** - default address from which payments will be made via the rpc interface [sendfunds-transfer](doc/rpc_methods.md#sendfunds-transfer)
+
+**lastSeed** - is the last node with which the rpc communicates. if it hangs, you can change it to one of the verified seeds and restart the rpc
+
+**whitelist** - list of white ip requests from which RPC will be processed. if left blank, access will be open to all addresses
+
+**verification_seeds** - a list of verified nodes for manual installation. by default, verified nodes are encoded in the project code, if they are not available, you can manually build them by requesting them from Discrod/Github.
+Example of installation: ***verification_seeds: “locahost,localhost,localhost,localhost”*** - the number of seeds must be at least 4
+
 
 ## Example of configuration
 

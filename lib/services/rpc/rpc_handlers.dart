@@ -23,11 +23,10 @@ import '../../blocs/debug_rpc_bloc.dart';
 import '../../blocs/network_events.dart';
 import '../../di.dart';
 import '../../models/debug_rpc.dart';
+import '../../models/response_node.dart';
 import '../../repository/repositories_rpc.dart';
-import '../../utils/path_app_rpc.dart';
-import '../../w_old/enum.dart';
-import '../../w_old/network_object.dart';
-import '../../w_old/response_node.dart';
+import '../../utils/enum.dart';
+import '../../utils/verification_service.dart';
 import '../backup_service.dart';
 import '../settings_yaml.dart';
 
@@ -353,7 +352,7 @@ class RPCHandlers {
           await _repositories.localRepository.isLocalAddress(hashAddress);
 
       if (isLocalAddress && NosoUtility.isValidHashNoso(hashAddress)) {
-        await SettingsYamlHandler(PathAppRpcUtil.getAppPath())
+        await SettingsYamlHandler()
             .writeSet(SettingsKeys.defaultPaymentAddress, hashAddress);
         return [
           {"result": true}
@@ -373,9 +372,8 @@ class RPCHandlers {
   Future<List<Map<String, dynamic>>> sendFunds(
       String receiver, int amount, String reference) async {
     try {
-      var defaultAddress =
-          await SettingsYamlHandler(PathAppRpcUtil.getAppPath())
-              .getSet(SettingsKeys.defaultPaymentAddress);
+      var defaultAddress = await SettingsYamlHandler()
+          .getSet(SettingsKeys.defaultPaymentAddress);
       var addressObject = await _repositories.localRepository
           .fetchAddressForHash(defaultAddress ?? "");
       int block;
@@ -461,7 +459,7 @@ class RPCHandlers {
     var appDataBlock = locatorRpc<NosoNetworkBloc>();
 
     if (localLastNode) {
-      return Seed().tokenizer(NetworkObject.getRandomNode(null),
+      return Seed().tokenizer(await VerificationService.getRandomNode(null),
           rawString: appDataBlock.appBlocConfig.lastSeed);
     }
 
@@ -479,7 +477,8 @@ class RPCHandlers {
       var listUsersNodes = appDataBlock.appBlocConfig.nodesList;
       var testNode = await _repositories.networkRepository.fetchNode(
           NodeRequest.getNodeStatus,
-          Seed().tokenizer(NetworkObject.getRandomNode(listUsersNodes)));
+          Seed().tokenizer(
+              await VerificationService.getRandomNode(listUsersNodes)));
       return testNode.seed;
     }
   }

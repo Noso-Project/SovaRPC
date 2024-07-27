@@ -8,10 +8,9 @@ import 'package:sovarpc/cli/cli_rpc_handler.dart';
 import 'package:sovarpc/cli/comands.dart';
 import 'package:sovarpc/cli/exit.dart';
 import 'package:sovarpc/cli/pen.dart';
+import 'package:sovarpc/utils/version.dart';
 
 final _logger = Logger("");
-
-///TODo  Методи не є спільними для ігнорування
 
 Future<void> main(List<String> arguments) async {
   PrintAppender.setupLogging();
@@ -22,6 +21,10 @@ Future<void> main(List<String> arguments) async {
         abbr: 'm', negatable: false, help: 'Show all JSON-RPC methods')
     ..addFlag(CliCommands.run,
         abbr: 'r', negatable: false, help: 'Start RPC mode')
+    ..addFlag(CliCommands.version,
+        abbr: 'v', negatable: false, help: 'Get version SovaRPC')
+    ..addFlag(CliCommands.testSeeds,
+        abbr: 't', negatable: false, help: 'Testing of verified seeds')
     ..addFlag(CliCommands.config,
         abbr: 'c',
         negatable: false,
@@ -36,6 +39,16 @@ Future<void> main(List<String> arguments) async {
       return;
     }
 
+    if (args[CliCommands.testSeeds] as bool) {
+      rpcHandler.testSeeds();
+      return;
+    }
+
+    if (args[CliCommands.version] as bool) {
+      rpcHandler.version();
+      return;
+    }
+
     if (args[CliCommands.methods] as bool) {
       rpcHandler.methods();
       return;
@@ -43,7 +56,9 @@ Future<void> main(List<String> arguments) async {
 
     if (args[CliCommands.run] as bool || arguments.isEmpty) {
       CliExit.exitListener(AppType.rpc);
-      stdout.writeln(Pen().greenBg('RPC mode started'));
+
+      stdout
+          .writeln(Pen().greenText('>>> SovaRPC v${VersionUtil.getVersion()}'));
       await rpcHandler.runRpcMode(_logger);
       return;
     }
@@ -56,5 +71,5 @@ Future<void> main(List<String> arguments) async {
   } catch (_) {}
 
   stdout.writeln(Pen().red(
-      'Error: Command or parameter not found. Please use --help to see available options.'));
+      '> Error: Command or parameter not found. Please use --help to see available options.'));
 }

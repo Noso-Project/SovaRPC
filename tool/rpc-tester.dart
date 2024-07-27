@@ -4,8 +4,8 @@ import 'package:http/http.dart' as http;
 Future<void> sendJsonRpcRequest(String url) async {
   final requestData = {
     "jsonrpc": "2.0",
-    "method":"getblockorders",
-    "params": ["163894"],
+    "method":"getmainnetinfo",
+    "params": [""],
     "id": 1
   };
   String body = jsonEncode(requestData);
@@ -27,5 +27,5 @@ Future<void> sendJsonRpcRequest(String url) async {
 }
 
 Future main(List<String> args) async {
-  sendJsonRpcRequest("http://localhost:8078");
+  sendJsonRpcRequest("http://192.168.31.95:8078");
 }
